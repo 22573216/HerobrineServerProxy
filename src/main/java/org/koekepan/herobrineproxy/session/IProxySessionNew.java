@@ -1,5 +1,7 @@
 package org.koekepan.herobrineproxy.session;
 
+import org.koekepan.herobrineproxy.sps.SPSPartition;
+
 import com.github.steveice10.packetlib.packet.Packet;
 
 public interface IProxySessionNew {
@@ -11,6 +13,7 @@ public interface IProxySessionNew {
 	public void setUsername(String username);
 	public void setServerHost(String host);
 	public void setServerPort(int port);
+	public void setVoronoiPartition(SPSPartition partition);
 
 	public void connect(String host, int port);
 	public boolean isConnected();

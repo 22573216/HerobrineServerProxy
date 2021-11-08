@@ -70,6 +70,7 @@ public class ServerSession implements IServerSession {
 		addChannelRegistration("Koekepan|migrate");
 		addChannelRegistration("Koekepan|kick");
 		addChannelRegistration("Koekepan|latency");
+		addChannelRegistration("Koekepan|partition");
 		packetExecutor = Executors.newSingleThreadScheduledExecutor();
 		connectExecutor = Executors.newSingleThreadScheduledExecutor();
 	}

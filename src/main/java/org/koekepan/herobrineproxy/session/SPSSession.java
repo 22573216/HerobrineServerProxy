@@ -47,7 +47,7 @@ public class SPSSession implements IServerSession {
 		addChannelRegistration("Koekepan|migrate");
 		addChannelRegistration("Koekepan|kick");
 		addChannelRegistration("Koekepan|latency");
-		
+		addChannelRegistration("Koekepan|partition");
 		this.spsClient = spsClient;
 		packetExecutor = Executors.newSingleThreadScheduledExecutor();
 		

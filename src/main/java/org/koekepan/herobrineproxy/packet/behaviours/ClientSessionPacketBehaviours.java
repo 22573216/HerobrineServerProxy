@@ -57,7 +57,7 @@ public class ClientSessionPacketBehaviours extends BehaviourHandler<Packet> {
 
 	public void registerDefaultBehaviours(ISession clientSession) {
 		this.clientSession = clientSession;
-		//ConsoleIO.println("ClientSessionPacketBehaviours::registerForwardingBehaviours => Clearing behaviours before registering default behaviours");
+		ConsoleIO.println("ClientSessionPacketBehaviours::registerForwardingBehaviours => Clearing behaviours before registering default behaviours");
 		clearBehaviours();
 		registerBehaviour(HandshakePacket.class, new ClientHandshakePacketBehaviour(this.clientSession, proxySession));										// 0x06 Player Position And Look 
 		registerBehaviour(LoginStartPacket.class, new ClientLoginStartPacketBehaviour(proxySession));												// 0x01 Login Start 

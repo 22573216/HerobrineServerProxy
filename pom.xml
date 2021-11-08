@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.koekepan</groupId>
-	<artifactId>HerobrineProxy</artifactId>
+	<artifactId>HerobrineServerProxy</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
@@ -18,6 +18,11 @@
 			<id>17238714</id>
 			<name>Kevin Rossouw</name>
 			<email>jkrossouw@live.co.za</email>
+		</developer>
+		<developer>
+			<id>21765944</id>
+			<name>Rudi Thiel</name>
+			<email>rudi@rudithiel.com</email>
 		</developer>
 	</developers>
 

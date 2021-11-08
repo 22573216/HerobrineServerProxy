@@ -5,6 +5,7 @@ import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.packet.behaviours.ClientSessionPacketBehaviours;
 import org.koekepan.herobrineproxy.packet.behaviours.ServerSessionPacketBehaviours;
 import org.koekepan.herobrineproxy.sps.ISPSConnection;
+import org.koekepan.herobrineproxy.sps.SPSPartition;
 
 import com.github.steveice10.packetlib.packet.Packet;
 
@@ -12,10 +13,13 @@ public class SPSToServerProxy implements IProxySessionNew {
 
 	ISession clientSession;
 	IServerSession serverSession;
+	IServerSession newServerSession;
 	ISPSConnection spsConnection;
+	SPSPartition voronoiPartition;
 	
 	ClientSessionPacketBehaviours clientPacketBehaviours;
 	ServerSessionPacketBehaviours serverPacketBehaviours;
+	ServerSessionPacketBehaviours newServerPacketBehaviours;
 		
 	public SPSToServerProxy(ISPSConnection spsConnection, String serverHost, int serverPort) {
 		this.spsConnection = spsConnection;
@@ -26,6 +30,11 @@ public class SPSToServerProxy implements IProxySessionNew {
 		this.clientSession.setPacketBehaviours(clientPacketBehaviours);		
 	}
 	
+	@Override
+	public void setVoronoiPartition(SPSPartition partition) {
+		this.voronoiPartition = partition;
+		spsConnection.subscribeToPartition(partition);
+	}
 		
 	@Override
 	public String getUsername() {
@@ -123,22 +132,24 @@ public class SPSToServerProxy implements IProxySessionNew {
 	@Override
 	public void migrate(String host, int port) {
 		ConsoleIO.println("SPSToServerProxy::migrate => Migrating player <"+getUsername()+"> to new server <"+host+":"+port+">");
-		//newServerSession = new ServerSession(getUsername(), host, port);
-		//this.newServerPacketBehaviours = new ServerSessionPacketBehaviours(this, newServerSession);
-		//this.newServerPacketBehaviours.registerMigrationBehaviour();
-		//this.newServerSession.setPacketBehaviours(newServerPacketBehaviours);	
-		//newServerSession.connect();
+		newServerSession = new ServerSession(getUsername(), host, port);
+		this.newServerPacketBehaviours = new ServerSessionPacketBehaviours(this, newServerSession);
+		this.newServerPacketBehaviours.registerMigrationBehaviour();
+		this.newServerSession.setPacketBehaviours(newServerPacketBehaviours);	
+		newServerSession.connect();
 	}
 	
 	
 	@Override
 	public void switchServer() {
-		//serverSession = newServerSession;
-		//this.serverPacketBehaviours.clearBehaviours();
-		//this.serverPacketBehaviours = this.newServerPacketBehaviours;
-		//this.newServerPacketBehaviours = null;
+		ConsoleIO.println("SWITCHING SERVER SESSIONS");
+		serverSession = newServerSession;
+		spsConnection.addListener(serverSession);
+		this.serverPacketBehaviours.clearBehaviours();
+		this.serverPacketBehaviours = this.newServerPacketBehaviours;
+		this.newServerPacketBehaviours = null;
 	}
-	
+
 	
 	@Override 
 	public void setPacketForwardingBehaviour() {

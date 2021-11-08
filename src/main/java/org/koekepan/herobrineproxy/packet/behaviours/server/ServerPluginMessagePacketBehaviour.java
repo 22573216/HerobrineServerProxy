@@ -8,9 +8,15 @@ import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.UUID;
+
 import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.behaviour.Behaviour;
 import org.koekepan.herobrineproxy.session.IProxySessionNew;
+import org.koekepan.herobrineproxy.sps.SPSPartition;
 import org.koekepan.performance.LatencyData;;
 
 public class ServerPluginMessagePacketBehaviour implements Behaviour<Packet> {
@@ -28,23 +34,71 @@ public class ServerPluginMessagePacketBehaviour implements Behaviour<Packet> {
 	@Override
 	public void process(Packet packet) {
 		ServerPluginMessagePacket pluginMessagePacket = (ServerPluginMessagePacket)packet;
-		//ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => PluginMessagePacket for channel <"+pluginMessagePacket.getChannel()+">");
+//		ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => PluginMessagePacket for channel <"+pluginMessagePacket.getChannel()+">");
 		if (pluginMessagePacket.getChannel().equals("Koekepan|migrate")) {
-			byte[] payload = pluginMessagePacket.getData();
-			String hostname = this.readStringFromData(payload);
-			ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => Received a migration message for client <"+proxySession.getUsername()+"> to migrate to server <"+hostname+">");
-			proxySession.migrate(hostname, proxySession.getServerPort()); 
+//			byte[] payload = pluginMessagePacket.getData();
+//			String hostname = this.readStringFromData(payload);
+//			ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => Received a migration message for client <"+proxySession.getUsername()+"> to migrate to server <"+hostname+">");
+//			proxySession.migrate(hostname, proxySession.getServerPort()); 
 		} else if (pluginMessagePacket.getChannel().equals("Koekepan|kick")) {
-				byte[] payload = pluginMessagePacket.getData();
-				String reason = this.readStringFromData(payload);
-				ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => Received a kick message for client <"+proxySession.getUsername()+"> with reason <"+reason+">");
-				if (proxySession.isConnected()) {
-					proxySession.disconnect();
-				}
+//				byte[] payload = pluginMessagePacket.getData();
+//				String reason = this.readStringFromData(payload);
+//				ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => Received a kick message for client <"+proxySession.getUsername()+"> with reason <"+reason+">");
+//				if (proxySession.isConnected()) {
+//					proxySession.disconnect();
+//				}
 		} else if (pluginMessagePacket.getChannel().equals("Koekepan|latency")) {
 			byte[] payload = pluginMessagePacket.getData();
 			this.echoLatencyPacket(proxySession, "Koekepan|latency", payload);
 			//System.out.println("ServerPluginMessagePacketBehaviour::process => Received latency measurement packet for client <"+client.getName()+">");	
+		} else if (pluginMessagePacket.getChannel().equals("Koekepan|partition")) {
+			ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => Received a partition message for client <"+proxySession.getUsername()+">");	
+			try {
+
+				byte[] payload = pluginMessagePacket.getData();
+				ByteArrayInputStream bis = new ByteArrayInputStream(payload);
+				DataInputStream in = new DataInputStream(bis);
+			
+				// Read location data
+				double x = in.readDouble();
+				double y = in.readDouble();
+				double z = in.readDouble();
+				float pitch = in.readFloat();
+				float yaw = in.readFloat();
+			
+				// Read volume data
+				int length = in.readInt();
+
+				double[] xPoints = new double[length];
+				double[] yPoints = new double[length];
+				for (int i = 0; i < length; i++) {
+					xPoints[i] = in.readDouble();
+					yPoints[i] = in.readDouble();
+				}
+				
+				// Read world UID data
+				Long MSB = in.readLong();
+				Long LSB = in.readLong();
+				UUID worldUID = new UUID(MSB, LSB);
+				
+				ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => <x,y,z,pitch,yaw> = <"+x+","+y+","+z+","+pitch+","+yaw+">");
+
+				String returnValue = "";			
+				for (int i = 0; i < length; i++) {
+					returnValue += "("+xPoints[i]+","+yPoints[i]+")\n";
+				}	
+				ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => Volume: "+returnValue);
+				
+				ConsoleIO.println("ServerPluginMessagePacketBehaviour::process => World UUID = <"+worldUID+">");
+
+				SPSPartition partition = new SPSPartition(xPoints, yPoints);
+				proxySession.setVoronoiPartition(partition);
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		}
 	}
 	

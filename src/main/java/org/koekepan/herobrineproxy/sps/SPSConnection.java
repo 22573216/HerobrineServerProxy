@@ -82,12 +82,26 @@ public class SPSConnection implements ISPSConnection {
 		}
 		return result;
 	}
+	
+	public void subscribeToPartition(SPSPartition partition) {
+		double[] x = partition.getXPoints();
+		double[] y = partition.getYPoints();
+		
+		socket.emit("subscribe", x, y);
+	}
 
 	public void initialiseListeners() {
 		socket.on("ID", new Emitter.Listener() {
 			@Override
 			public void call(Object... data) {
 				receiveConnectionID((int) data[0]);
+			}
+		});
+		
+		socket.on("getType", new Emitter.Listener() {
+			@Override
+			public void call(Object... args) {
+				socket.emit("type", "server");
 			}
 		});
 
@@ -122,7 +136,6 @@ public class SPSConnection implements ISPSConnection {
 				} else if (listeners.containsKey(username)) {					
 					//listeners.get(username).packetReceived(packet.packet);
 //					ConsoleIO.println("SPSConnection::publication => Sending packet <"+packet.packet.getClass().getSimpleName()+"> for player <"+username+"> at <"+x+":"+y+":"+radius+">");
-					
 					listeners.get(username).sendPacket(packet.packet);
 				} else {
 					ConsoleIO.println("SPSConnection::publication => Received a packet for an unknown session <"+username+">");
@@ -201,7 +214,7 @@ public class SPSConnection implements ISPSConnection {
 			}
 		}
 		if (packet.packet instanceof ServerSpawnGlobalEntityPacket) {
-			ConsoleIO.println("SPAWN GLOBAL MOB");
+//			ConsoleIO.println("SPAWN GLOBAL MOB");
 			
 			double x = ((ServerSpawnGlobalEntityPacket) packet.packet).getX();
 			double z = ((ServerSpawnGlobalEntityPacket) packet.packet).getZ();
@@ -214,7 +227,7 @@ public class SPSConnection implements ISPSConnection {
 		}
 		
 		if (packet.packet instanceof ServerEntityDestroyPacket) {
-			ConsoleIO.println("DESTROY ENTITY");
+//			ConsoleIO.println("DESTROY ENTITY");
 			int ids[] = ((ServerEntityDestroyPacket) packet.packet).getEntityIds();
 			for (int id : ids) {
 				if (entities.containsKey(id)) {
@@ -264,6 +277,10 @@ public class SPSConnection implements ISPSConnection {
 		
 	}
 
+	
+	public void changeListener(String username, ISession session) {
+		listeners.replace(username, session);
+	}
 
 	@Override
 	public void subscribe(String channel) {

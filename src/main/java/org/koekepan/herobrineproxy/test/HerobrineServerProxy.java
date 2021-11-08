@@ -14,20 +14,24 @@ public class HerobrineServerProxy {
 		int spsPort = 3000;
 		String serverHost = "127.0.0.1";
 		int serverPort = 25565;
+		String proxyHost = "127.0.0.1";
+		int proxyPort = 25561;
 		
 		// read command line parameters
 		try {
 			if (args.length == 2) {
 				spsHost = args[0];
 				spsPort = Integer.parseInt(args[1]);
-				proxy = new ServerProxy(spsHost, spsPort, serverHost, serverPort);
+				proxy = new ServerProxy(spsHost, spsPort, serverHost, serverPort, proxyHost, proxyPort);
 
-			} else if (args.length == 4) {
+			} else if (args.length == 6) {
 				serverHost = args[0];
 				serverPort = Integer.parseInt(args[1]);
 				spsHost = args[2];
 				spsPort = Integer.parseInt(args[3]);
-				proxy = new ServerProxy(spsHost, spsPort, serverHost, serverPort);
+				proxyHost = args[4];
+				proxyPort = Integer.parseInt(args[5]);
+				proxy = new ServerProxy(spsHost, spsPort, serverHost, serverPort, proxyHost, proxyPort);
 			} else {
 				printUsageMessage();
 			}

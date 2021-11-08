@@ -41,6 +41,7 @@ public interface ISPSConnection {
 	
 	// Sending functions
 	public void subscribe(String channel); // "function" : "sub"
+	public void subscribeToPartition(SPSPartition partition);
 	public void unsubscribed(String channel); // "function : usub"
 	public void publish(SPSPacket packet);
 	public void addListener(ISession listener);

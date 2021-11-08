@@ -4,6 +4,7 @@ package org.koekepan.herobrineproxy.session;
 import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.packet.behaviours.ClientSessionPacketBehaviours;
 import org.koekepan.herobrineproxy.packet.behaviours.ServerSessionPacketBehaviours;
+import org.koekepan.herobrineproxy.sps.SPSPartition;
 
 import com.github.steveice10.packetlib.packet.Packet;
 
@@ -26,6 +27,10 @@ public class ProxySessionV3 implements IProxySessionNew {
 		this.serverSession = new ServerSession(serverHost, serverPort);
 	}
 	
+	@Override
+	public void setVoronoiPartition(SPSPartition partition) { 
+		
+	}
 		
 	@Override
 	public String getUsername() {

@@ -42,34 +42,20 @@ public class ServerProxy implements IProxySessionConstructor{
 	
 	public Socket socket;
 	
-	public ServerProxy(final String serverHost, final int serverPort, final String spsHost, final int spsPort ) {
+	public ServerProxy(final String serverHost, final int serverPort, final String spsHost, final int spsPort, final String proxyHost, final int proxyPort) {
 		this.spsHost = spsHost;
 		this.spsPort = spsPort;
 		this.serverHost = serverHost;
 		this.serverPort = serverPort;
-			
+		
+		// setup new SPS connection to matcher on proxy startup
 		this.spsConnection = new SPSConnection(this.spsHost, this.spsPort, this);
 		this.spsConnection.connect();
-		// setup proxy server and add listener to create and store/discard proxy sessions as clients connect/disconnect
-		server = new Server("127.0.0.1", 25561, HerobrineProxyProtocol.class, new TcpSessionFactory());	
 		
-//		server.addListener(new ServerAdapter() {
-//			
-//			@Override
-//			public void sessionAdded(SessionAddedEvent event) {
-////				Session session = event.getSession();
-////				ConsoleIO.println("HerobrineServerProxy::sessionAdded => A SessionAdded event occured from <"+session.getHost()+":"+session.getPort()+"> to server <"+serverHost+":"+serverPort+">");
-////				IClientSession clientSession = new ClientSession(session);
-////				//IProxySessionNew proxySession = new ProxySessionV3(clientSession, serverHost, serverPort);
-////				IProxySessionNew proxySession = new SPSToServerProxy(spsConnection, serverHost, serverPort);
-////				sessions.put(event.getSession(), proxySession);
-//			}
-//
-//			@Override
-//			public void sessionRemoved(SessionRemovedEvent event) {
-////				sessions.remove(event.getSession()).disconnect();
-//			}
-//		});
+		// setup proxy server and add listener to create and store/discard proxy sessions as clients connect/disconnect
+		// proxy port is hardcoded for now
+		server = new Server(proxyHost, proxyPort, HerobrineProxyProtocol.class, new TcpSessionFactory());	
+		
 	}
 	
 	
@@ -89,16 +75,6 @@ public class ServerProxy implements IProxySessionConstructor{
 	public void close() {
 		server.close(true);
 	}
-
-	
-//	public String getProxyHost() {
-//		return proxyHost;
-//	}
-//
-//	
-//	public int getProxyPort() {
-//		return proxyPort;
-//	}
 
 
 	public String getServerHost() {
