@@ -4,24 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.koekepan.herobrineproxy.session.*;
 import org.koekepan.herobrineproxy.sps.*;
 
 import io.socket.client.*;
-import io.socket.emitter.Emitter;
-import java.net.URISyntaxException;
 
 import com.github.steveice10.packetlib.Server;
-import com.github.steveice10.packetlib.Session;
-import com.github.steveice10.packetlib.event.server.ServerAdapter;
-import com.github.steveice10.packetlib.event.server.SessionAddedEvent;
-import com.github.steveice10.packetlib.event.server.SessionRemovedEvent;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
-import com.github.steveice10.packetlib.packet.Packet;
 
 // the main class for the proxy
 // this class creates a proxy session for every client session that is connected
@@ -31,10 +21,10 @@ public class ServerProxy implements IProxySessionConstructor{
 
 	//private ScheduledExecutorService serverPoll = Executors.newSingleThreadScheduledExecutor();
 
-	private String spsHost = null;
-	private int spsPort = 0;
-	private String serverHost = null;
-	private int serverPort = 0;
+	private String VastHost = null;
+	private int VastPort = 0;
+	private String MinecraftServerHost = null;
+	private int MinecraftServerPort = 0;
 	private ISPSConnection spsConnection;
 	
 	private Server server = null;
@@ -42,19 +32,19 @@ public class ServerProxy implements IProxySessionConstructor{
 	
 	public Socket socket;
 	
-	public ServerProxy(final String serverHost, final int serverPort, final String spsHost, final int spsPort, final String proxyHost, final int proxyPort) {
-		this.spsHost = spsHost;
-		this.spsPort = spsPort;
-		this.serverHost = serverHost;
-		this.serverPort = serverPort;
+	public ServerProxy(final String VastHost, final int VastPort, final String MinecraftServerHost, final int MinecraftServerPort, final String ThisProxyHost, final int ThisProxyPort) {
+		this.VastHost = VastHost;
+		this.VastPort = VastPort;
+		this.MinecraftServerHost = MinecraftServerHost;
+		this.MinecraftServerPort = MinecraftServerPort;
 		
 		// setup new SPS connection to matcher on proxy startup
-		this.spsConnection = new SPSConnection(this.spsHost, this.spsPort, this);
+		this.spsConnection = new SPSConnection(this.VastHost, this.VastPort, this);
 		this.spsConnection.connect();
 		
 		// setup proxy server and add listener to create and store/discard proxy sessions as clients connect/disconnect
 		// proxy port is hardcoded for now
-		server = new Server(proxyHost, proxyPort, HerobrineProxyProtocol.class, new TcpSessionFactory());	
+		server = new Server(ThisProxyHost, ThisProxyPort, HerobrineProxyProtocol.class, new TcpSessionFactory());
 		
 	}
 	
@@ -77,13 +67,13 @@ public class ServerProxy implements IProxySessionConstructor{
 	}
 
 
-	public String getServerHost() {
-		return serverHost;
+	public String getMinecraftServerHost() {
+		return MinecraftServerHost;
 	}
 
 
-	public int getServerPort() {
-		return serverPort;
+	public int getMinecraftServerPort() {
+		return MinecraftServerPort;
 	}
 
 	
@@ -93,7 +83,7 @@ public class ServerProxy implements IProxySessionConstructor{
 	
 	@Override
 	public IProxySessionNew createProxySession(String username) {
-		SPSToServerProxy newProxySession = new SPSToServerProxy(this.spsConnection, this.serverHost, this.serverPort);
+		SPSToServerProxy newProxySession = new SPSToServerProxy(this.spsConnection, this.MinecraftServerHost, this.MinecraftServerPort);
 		newProxySession.setUsername(username);
 		sessions.put(username, newProxySession);
 		return newProxySession;

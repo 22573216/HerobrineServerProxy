@@ -56,6 +56,7 @@ public class SPSConnection implements ISPSConnection {
 	private Map<Integer, Entity> entities = new HashMap<Integer, Entity>();
 	
 	private IProxySessionConstructor sessionConstructor;
+	private UUID uuid = UUID.randomUUID();
 	
 	public SPSConnection(String SPSHost, int SPSPort) {
 		this.SPSHost = SPSHost;
@@ -73,20 +74,41 @@ public class SPSConnection implements ISPSConnection {
 	private boolean initializeConnection() {
 		String URL = "http://"+this.SPSHost+":"+this.SPSPort;
 		ConsoleIO.println(URL);
-		boolean result = false;
+		final boolean[] result = {false};
 		try {
 			this.socket = IO.socket(URL);
-			result = true;
+			final UUID thisUUID = this.uuid;
+
+			socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+					socket.emit("handshake", "Hello, server. This is Java Client with UUID: " + thisUUID.toString());
+				}
+			}).on("handshake", new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+					if (("Hello, client with UUID: " + thisUUID.toString() + ". This is Node.js Server.").equals(args[0])) {
+						System.out.println("Successfully connected to the correct server.");
+					} else {
+						System.out.println("Failed to connect to the correct server.");
+					}
+				}
+			});
+
+			socket.connect();
+
+			result[0] = true;
 		} catch (URISyntaxException e) {
-				e.printStackTrace();
+			e.printStackTrace();
 		}
-		return result;
+		ConsoleIO.println("the result got from initializeconnection is: " + result[0]);
+		return result[0];
 	}
-	
+
 	public void subscribeToPartition(SPSPartition partition) {
 		double[] x = partition.getXPoints();
 		double[] y = partition.getYPoints();
-		
+
 		socket.emit("subscribe", x, y);
 	}
 
@@ -149,7 +171,7 @@ public class SPSConnection implements ISPSConnection {
 	public void connect() {
 		if (initializeConnection()) {
 			initialiseListeners();
-			socket.connect();
+//			socket.connect();
 		}
 	}
 
