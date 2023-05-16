@@ -73,21 +73,35 @@ public class SPSConnection implements ISPSConnection {
 	private boolean initializeConnection() {
 		String URL = "http://"+this.SPSHost+":"+this.SPSPort;
 		ConsoleIO.println(URL);
-		boolean result = false;
+		final boolean[] result = {false};
 		try {
 			this.socket = IO.socket(URL);
-			result = true;
+
+			socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+					socket.emit("message", "Hello from Java Client!");
+				}
+			});
+
+			socket.on("message", new Emitter.Listener() {
+				@Override
+				public void call(Object... args) {
+					System.out.println(args[0]);
+					result[0] = true;
+				}
+			});
+
+			socket.connect();
+
+
+
+			result[0] = true;
 		} catch (URISyntaxException e) {
-				e.printStackTrace();
+			e.printStackTrace();
 		}
-		return result;
-	}
-	
-	public void subscribeToPartition(SPSPartition partition) {
-		double[] x = partition.getXPoints();
-		double[] y = partition.getYPoints();
-		
-		socket.emit("subscribe", x, y);
+		ConsoleIO.println("the result got from initializeconnection is: " + result[0]);
+		return result[0];
 	}
 
 	public void initialiseListeners() {
@@ -149,7 +163,7 @@ public class SPSConnection implements ISPSConnection {
 	public void connect() {
 		if (initializeConnection()) {
 			initialiseListeners();
-			socket.connect();
+//			socket.connect();
 		}
 	}
 

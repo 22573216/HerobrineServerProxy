@@ -6,32 +6,32 @@ import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.ServerProxy;
 import org.koekepan.herobrineproxy.session.IProxySessionNew;
 
-public class HerobrineServerProxy {
+public class HerobrineServerVastProxy {
 	private static ServerProxy proxy = null;
 
 	public static void main(String[] args) {
-		String spsHost = "127.0.0.1";
-		int spsPort = 3000;
-		String serverHost = "127.0.0.1";
-		int serverPort = 25565;
-		String proxyHost = "127.0.0.1";
-		int proxyPort = 25561;
+		String VastHost = "127.0.0.1";
+		int VastPort = 3000;
+		String MinecraftServerHost = "127.0.0.1";
+		int MinecraftServerPort = 25565;
+		String ThisProxyHost = "127.0.0.1";
+		int ThisProxyPort = 25561;
 		
 		// read command line parameters
 		try {
 			if (args.length == 2) {
-				spsHost = args[0];
-				spsPort = Integer.parseInt(args[1]);
-				proxy = new ServerProxy(spsHost, spsPort, serverHost, serverPort, proxyHost, proxyPort);
+				VastHost = args[0];
+				VastPort = Integer.parseInt(args[1]);
+				proxy = new ServerProxy(VastHost, VastPort, MinecraftServerHost, MinecraftServerPort, ThisProxyHost, ThisProxyPort);
 
 			} else if (args.length == 6) {
-				serverHost = args[0];
-				serverPort = Integer.parseInt(args[1]);
-				spsHost = args[2];
-				spsPort = Integer.parseInt(args[3]);
-				proxyHost = args[4];
-				proxyPort = Integer.parseInt(args[5]);
-				proxy = new ServerProxy(spsHost, spsPort, serverHost, serverPort, proxyHost, proxyPort);
+				MinecraftServerHost = args[0];
+				MinecraftServerPort = Integer.parseInt(args[1]);
+				VastHost = args[2];
+				VastPort = Integer.parseInt(args[3]);
+				ThisProxyHost = args[4];
+				ThisProxyPort = Integer.parseInt(args[5]);
+				proxy = new ServerProxy(VastHost, VastPort, MinecraftServerHost, MinecraftServerPort, ThisProxyHost, ThisProxyPort);
 			} else {
 				printUsageMessage();
 			}
