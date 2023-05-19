@@ -11,7 +11,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 
 public class SPSToServerProxy implements IProxySessionNew {
 
-	ISession clientSession;
+	ISession client_sps_Session;
 	IServerSession serverSession;
 	IServerSession newServerSession;
 	ISPSConnection spsConnection;
@@ -23,11 +23,11 @@ public class SPSToServerProxy implements IProxySessionNew {
 		
 	public SPSToServerProxy(ISPSConnection spsConnection, String serverHost, int serverPort) {
 		this.spsConnection = spsConnection;
-		this.clientSession = new SPSSession(spsConnection);
+		this.client_sps_Session = new SPSSession(spsConnection);
 		this.serverSession = new ServerSession(serverHost, serverPort);
 		this.clientPacketBehaviours = new ClientSessionPacketBehaviours(this);
-		this.clientPacketBehaviours.registerDefaultBehaviours(clientSession);
-		this.clientSession.setPacketBehaviours(clientPacketBehaviours);		
+		this.clientPacketBehaviours.registerDefaultBehaviours(client_sps_Session);
+		this.client_sps_Session.setPacketBehaviours(clientPacketBehaviours);
 	}
 	
 	@Override
@@ -38,13 +38,13 @@ public class SPSToServerProxy implements IProxySessionNew {
 		
 	@Override
 	public String getUsername() {
-		return clientSession.getUsername();
+		return client_sps_Session.getUsername();
 	}
 	
 	
 	@Override
 	public void setUsername(String username) {
-		clientSession.setUsername(username);
+		client_sps_Session.setUsername(username);
 		serverSession.setUsername(username);
 	}
 	
@@ -53,7 +53,7 @@ public class SPSToServerProxy implements IProxySessionNew {
 	public void sendPacketToClient(Packet packet) {
 		
 		//ConsoleIO.println("SPSToServerProxy::sendPacketToClient => Sending packet <"+packet.getClass().getSimpleName()+"> to client <"+clientSession.getHost()+":"+clientSession.getPort()+">");
-		clientSession.sendPacket(packet);
+		client_sps_Session.sendPacket(packet);
 	}
 
 	
@@ -111,8 +111,8 @@ public class SPSToServerProxy implements IProxySessionNew {
 	
 	
 	private void disconnectFromClient() {
-		if (clientSession.isConnected()) {
-			clientSession.disconnect();
+		if (client_sps_Session.isConnected()) {
+			client_sps_Session.disconnect();
 		}
 	}
 

@@ -137,7 +137,9 @@ public class SPSSession implements IServerSession {
 	@Override
 	public void sendPacket(Packet packet) {
 //		ConsoleIO.println("SPSSession::sendPacket => sending packet " + packet.getClass().getSimpleName());
-		packetHandler.sendPacket(packet);		
+		packetHandler.sendPacket(packet);		// TODO: Send Message to VAST! i.e. make publication
+//		this.spsClient.publish(packet);
+//		this.spsClient.publish(packet); // Something like this
 	}
 
 
