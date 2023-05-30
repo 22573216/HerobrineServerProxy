@@ -29,7 +29,7 @@ public class ServerJoinGamePacketBehaviour implements Behaviour<Packet> {
 		serverJoinPacket.getEntityId();
 		//proxySession.setJoined(true);
 		ConsoleIO.println("player \""+proxySession.getUsername()+"\" with entityID <"+serverJoinPacket.getEntityId()+"> has successfully joined world");
-		proxySession.sendPacketToClient(packet);
+		proxySession.sendPacketToVASTnet_Client(packet);
 		serverSession.setJoined(true);
 		//proxySession.registerForPluginChannels();
 		//proxySession.getJoinedCountDownLatch().countDown();

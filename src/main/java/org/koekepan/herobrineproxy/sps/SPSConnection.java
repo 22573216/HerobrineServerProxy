@@ -125,6 +125,7 @@ public class SPSConnection implements ISPSConnection {
 		socket.emit("subscribe", x, y);
 	}
 
+	int temp_receivedcounter = 0;
 	public void initialiseListeners() {
 		socket.on("ID", new Emitter.Listener() {
 			@Override
@@ -150,24 +151,29 @@ public class SPSConnection implements ISPSConnection {
 		socket.on("publication", new Emitter.Listener() {
 			@Override
 			public void call(Object... data) { // TODO: This is where the actual complicated sps thingies should happen, this is from this proxy to the NMS server
+//				ConsoleIO.println("Received Packet!");
+				temp_receivedcounter += 1;
 				SPSPacket packet = receivePublication(data);
 				String username = packet.username;
 				int x = packet.x;
 				int y = packet.y;
 				int radius = packet.radius;
-				
+
+				ConsoleIO.println("Amount of packets received: " + temp_receivedcounter + ": " + packet.packet.getClass().getSimpleName());
+
 				if (packet.packet instanceof EstablishConnectionPacket) { //Login Process
 					EstablishConnectionPacket loginPacket = (EstablishConnectionPacket)packet.packet;
-					ConsoleIO.println("Creating a fake player on server");
 					//LoginStartPacket loginPacket = (LoginStartPacket)packet.packet;
 					username = loginPacket.getUsername();
 					if (loginPacket.establishConnection()) {
+						ConsoleIO.println("Creating a fake player on server");
 						ConsoleIO.println("SPSConnection::publication Must establish new connection for session <"+username+">");
 						IProxySessionNew proxySession = sessionConstructor.createProxySession(username);
 						String host = proxySession.getServerHost();
 						int port = proxySession.getServerPort();
-						proxySession.connect(host, port);					
+						proxySession.connect(host, port); //Listener and ProxySession? Registers forwarding that does not happen.
 					} else {
+						ConsoleIO.println("Deleting a fake player on server");
 						ConsoleIO.println("SPSConnection::publication Must disconnect session of user <"+username+">");
 						IProxySessionNew proxySession = sessionConstructor.getProxySession(username);
 						if (proxySession != null) {
@@ -179,7 +185,8 @@ public class SPSConnection implements ISPSConnection {
 				} else if (listeners.containsKey(username)) {					
 					//listeners.get(username).packetReceived(packet.packet);
 //					ConsoleIO.println("SPSConnection::publication => Sending packet <"+packet.packet.getClass().getSimpleName()+"> for player <"+username+"> at <"+x+":"+y+":"+radius+">");
-					ConsoleIO.println("Sending Packet from proxy to server 'as player' ");
+					ConsoleIO.println("Sending Packet from proxy to server as " + username + ": " + packet.packet.getClass().getSimpleName());
+					ConsoleIO.println("It would also seem that the listener used is a: " + listeners.get(username).getClass().getName());
 					listeners.get(username).sendPacket(packet.packet);
 				} else {
 					ConsoleIO.println("SPSConnection::publication => Received a packet for an unknown session <"+username+">");
@@ -202,7 +209,7 @@ public class SPSConnection implements ISPSConnection {
 
 	private void initialiseVASTclient() {
 		ConsoleIO.println("Trying to spawn a VAST Client to represent the Minecraft Server on VASTnet");
-		socket.emit("spawn_VASTclient", "Minecraft Server 1", "127.0.0.1", "20000");
+		socket.emit("spawn_VASTclient", "Minecraft Server 1", "127.0.0.1", "20000", "250", "250");
 
 		// TODO: This subscribe should be more server-specific:
 		try {
@@ -210,7 +217,8 @@ public class SPSConnection implements ISPSConnection {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
-		socket.emit("subscribe", 500,500,500,"login");
+		socket.emit("subscribe", 250,250,300,"serverBound");
+//		socket.emit("subscribe", 750,750,300,"serverBound");
 	}
 
 
@@ -242,8 +250,7 @@ public class SPSConnection implements ISPSConnection {
 		try {
 			org.json.JSONObject jsonObject = (org.json.JSONObject) data[0];
 			org.json.JSONObject payloadObject = jsonObject.getJSONObject("payload");
-			ConsoleIO.println("This is what I've got: " + payloadObject.toString());
-//			{"chain":[1],"clientID":"zDJlt","payload":{"0":0,"1":"user_01","2":0,"3":0,"4":200,"5":"[117,7,117,115,101,114,95,48,49,1]","6":"login"},"recipients":[1],"channel":"login","aoi":{"center":{"x":500,"y":500},"radius":500},"matcherID":1}
+//			ConsoleIO.println("This is what I've got: " + payloadObject.toString());
 			String connectionID = payloadObject.getString("connectionID");
 			String userName = payloadObject.getString("username");
 			int x = payloadObject.getInt("x");
@@ -270,11 +277,13 @@ public class SPSConnection implements ISPSConnection {
 		this.connectionID = connectionID;
 		ConsoleIO.println("Received connectionID: <"+connectionID+">");
 	}
-	
-	
+
+	int tempcounter_deleteme = 0;
 	@Override
-	public void publish(SPSPacket packet) { 
-		ConsoleIO.println("Publishing a packet:" + packet.packet.getClass().getSimpleName());
+	public void publish(SPSPacket packet) { // Send to Vast matcher via a client
+		tempcounter_deleteme += 1;
+		ConsoleIO.println("Amount of publications sent: "+ tempcounter_deleteme +": " + packet.packet.getClass().getSimpleName() + " to channel: " + packet.channel);
+//		ConsoleIO.println("Publishing a packet:" + packet.packet.getClass().getSimpleName());
 		
 		if (packet.packet instanceof ServerSpawnMobPacket) {
 			ConsoleIO.println("SPAWN MOB");
@@ -343,11 +352,13 @@ public class SPSConnection implements ISPSConnection {
 		if (entityId != -1) {
 			publishEntityPacket(entityId, packet, json);
 		} else if (packet.packet instanceof ServerVehicleMovePacket) {
-			double x = ((ServerVehicleMovePacket) packet.packet).getX();
-			double z = ((ServerVehicleMovePacket) packet.packet).getZ();
-			socket.emit("publish", connectionID, packet.username, (int) x, (int) z, 5, json, packet.channel);
+//			double x = ((ServerVehicleMovePacket) packet.packet).getX();
+//			double z = ((ServerVehicleMovePacket) packet.packet).getZ();
+//			socket.emit("publish", connectionID, packet.username, (int) x, (int) z, 5, json, packet.channel);
+//			socket.emit("publish", connectionID, packet.username, (int) 500, (int) 500, 100, json, packet.channel);
+			socket.emit("publish", connectionID, packet.username, (int) 500, (int) 500, 2000, json, packet.channel);
 		} else {
-			socket.emit("publish", connectionID, packet.username, 0, 0, 0, json, packet.channel);
+			socket.emit("publish", connectionID, packet.username, 500, 500, 2000, json, packet.channel);
 		}
 		
 	}
@@ -404,9 +415,13 @@ public class SPSConnection implements ISPSConnection {
 			Entity entity = entities.get(entityId);
 			double x = entity.getX();
 			double z = entity.getZ();
-			socket.emit("publish", connectionID, packet.username, (int) x, (int) z, 5, payload, packet.channel);
+//			socket.emit("publish", connectionID, packet.username, (int) x, (int) z, 5, payload, packet.channel);
+//			socket.emit("publish", connectionID, packet.username, (int) 500, (int) 500, 100, payload, packet.channel);
+			socket.emit("publish", connectionID, packet.username, (int) 500, (int) 500, 2000, payload, packet.channel);
+
 		} else {
-			socket.emit("publish", connectionID, packet.username, 0, 0, 0, payload, packet.channel);
+//			socket.emit("publish", connectionID, packet.username, 0, 0, 0, payload, packet.channel);
+			socket.emit("publish", connectionID, packet.username, 0, 0, 2000, payload, packet.channel);
 		}
 	}
 		

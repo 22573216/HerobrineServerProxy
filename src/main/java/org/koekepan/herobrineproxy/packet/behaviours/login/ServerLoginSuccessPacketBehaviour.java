@@ -25,6 +25,6 @@ public class ServerLoginSuccessPacketBehaviour implements Behaviour<Packet> {
 	public void process(Packet packet) {
 		LoginSuccessPacket loginSuccessPacket = (LoginSuccessPacket)packet;	
 		ConsoleIO.println("ServerLoginSuccessPacketBehaviour::process => Player \""+loginSuccessPacket.getProfile().getName()+"\" has successfully logged into the server");		
-		proxySession.sendPacketToClient(packet);
+		proxySession.sendPacketToVASTnet_Client(packet);
 	}
 }

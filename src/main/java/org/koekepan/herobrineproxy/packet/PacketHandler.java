@@ -108,7 +108,7 @@ public class PacketHandler implements Runnable, PacketListener {
 		Packet packet = null;
 		try {
 			packet = incomingPackets.poll();
-			if (packet != null) {
+			if (packet != null) { // NOT OUTGOING PACKETS! TODO: Should add behaviours to outgoing packets as well.
 				//ConsoleIO.println("PacketHandler::run => Processing packet <"+packet.getClass().getSimpleName()+">. Packets remaining in queue: "+incomingPackets.size());
 				behaviours.process(packet);
 			}

@@ -50,16 +50,17 @@ public class SPSToServerProxy implements IProxySessionNew {
 	
 
 	@Override
-	public void sendPacketToClient(Packet packet) {
+	public void sendPacketToVASTnet_Client(Packet packet) {
 		
 		//ConsoleIO.println("SPSToServerProxy::sendPacketToClient => Sending packet <"+packet.getClass().getSimpleName()+"> to client <"+clientSession.getHost()+":"+clientSession.getPort()+">");
+//		ConsoleIO.println("SPSToServerProxy::sendPacketToClient=> Sending packet <"+packet.getClass().getSimpleName());
 		client_sps_Session.sendPacket(packet);
 	}
 
 	
 	@Override
 	public void sendPacketToServer(Packet packet) {
-		//ConsoleIO.println("SPSToServerProxy::sendPacketToServer => Sending packet <"+packet.getClass().getSimpleName()+"> to server <"+serverSession.getHost()+":"+serverSession.getPort()+">");		
+		ConsoleIO.println("SPSToServerProxy::sendPacketToServer => Sending packet <"+packet.getClass().getSimpleName()+"> to server <"+serverSession.getHost()+":"+serverSession.getPort()+">");
 		serverSession.sendPacket(packet);
 	}
 	

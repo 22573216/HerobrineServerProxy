@@ -28,7 +28,7 @@ public class ServerPlayerPositionPacketBehaviour implements Behaviour<Packet> {
 		ConsoleIO.println("ServerPlayerPositionRotationPacket::process => Player \""+proxySession.getUsername()+"\" received location: "+p.toString());		
 		ClientPlayerPositionRotationPacket responsePacket = new ClientPlayerPositionRotationPacket(true, p.getX(), p.getY(), p.getZ(), p.getYaw(), p.getPitch());
 		proxySession.sendPacketToServer(responsePacket);
-		proxySession.sendPacketToClient(packet);
+		proxySession.sendPacketToVASTnet_Client(packet);
 		proxySession.setPacketForwardingBehaviour();
 	}
 }

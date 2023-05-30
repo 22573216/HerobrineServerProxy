@@ -20,7 +20,7 @@ public interface IProxySessionNew {
 	public void disconnect();
 	public void disconnectFromServer();
 	
-	public void sendPacketToClient(Packet packet);
+	public void sendPacketToVASTnet_Client(Packet packet);
 	public void sendPacketToServer(Packet packet);
 	
 	public void migrate(String host, int port);

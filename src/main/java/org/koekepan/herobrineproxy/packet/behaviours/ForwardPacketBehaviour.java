@@ -1,5 +1,6 @@
 package org.koekepan.herobrineproxy.packet.behaviours;
 
+import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.behaviour.Behaviour;
 import org.koekepan.herobrineproxy.session.IProxySessionNew;
 
@@ -25,7 +26,7 @@ public class ForwardPacketBehaviour implements Behaviour<Packet>{
 		if (toServer) {
 			proxySession.sendPacketToServer(packet);
 		} else {
-			proxySession.sendPacketToClient(packet);	
+			proxySession.sendPacketToVASTnet_Client(packet);
 		}
 	}
 }

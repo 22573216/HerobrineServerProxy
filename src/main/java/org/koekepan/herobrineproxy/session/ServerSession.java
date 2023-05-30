@@ -204,7 +204,8 @@ public class ServerSession implements IServerSession {
 	
 	@Override
 	public void sendPacket(Packet packet) {
-		packetHandler.sendPacket(packet);		
+		ConsoleIO.println("Send packet as Server Session: " + packet.getClass().getSimpleName());
+		packetHandler.sendPacket(packet);
 	}
 	
 	

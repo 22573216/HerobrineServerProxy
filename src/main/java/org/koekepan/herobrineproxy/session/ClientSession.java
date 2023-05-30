@@ -95,6 +95,7 @@ public class ClientSession implements ISession {
 
 	@Override
 	public void sendPacket(Packet packet) {
+		ConsoleIO.println("Sent packet as Client Session");
 		packetHandler.sendPacket(packet);		
 	}
 

@@ -23,6 +23,7 @@ import com.google.common.base.Charsets;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public class SPSSession implements IServerSession {
 
@@ -65,7 +66,7 @@ public class SPSSession implements IServerSession {
 
 	@Override
 	public void setUsername(String username) {
-		ConsoleIO.println("SPSSession::setUsername => Settting session username to <"+username+">");
+		ConsoleIO.println("SPSSession::setUsername => Setting session username to <"+username+">");
 		this.username = username;
 		this.packetSession.setUsername(username);
 		this.spsClient.addListener(this);
@@ -135,11 +136,13 @@ public class SPSSession implements IServerSession {
 
 
 	@Override
-	public void sendPacket(Packet packet) {
+	public void sendPacket(Packet packet) { // Send Message to VAST! i.e. make publication
+		ConsoleIO.println("Sending packet via SPSSession to VAST: " + packet.getClass().getSimpleName());
 //		ConsoleIO.println("SPSSession::sendPacket => sending packet " + packet.getClass().getSimpleName());
-		packetHandler.sendPacket(packet);		// TODO: Send Message to VAST! i.e. make publication
-//		this.spsClient.publish(packet);
-//		this.spsClient.publish(packet); // Something like this
+//		packetHandler.sendPacket(packet);
+
+		SPSPacket spsPacket = new SPSPacket(packet, "user_01", 500, 500, 100, "clientBound"); // TODO: Fix username
+		this.spsClient.publish(spsPacket);
 	}
 
 
