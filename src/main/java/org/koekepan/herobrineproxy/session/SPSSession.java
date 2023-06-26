@@ -139,10 +139,10 @@ public class SPSSession implements IServerSession {
 	public void sendPacket(Packet packet) { // Send Message to VAST! i.e. make publication
 		ConsoleIO.println("Sending packet via SPSSession to VAST: " + packet.getClass().getSimpleName());
 //		ConsoleIO.println("SPSSession::sendPacket => sending packet " + packet.getClass().getSimpleName());
-//		packetHandler.sendPacket(packet);
+		packetHandler.sendPacket(packet);
 
-		SPSPacket spsPacket = new SPSPacket(packet, "user_01", 500, 500, 100, "clientBound"); // TODO: Fix username
-		this.spsClient.publish(spsPacket);
+//		SPSPacket spsPacket = new SPSPacket(packet, this.username, , 500, 100, "clientBound"); // TODO: Fix username
+//		this.spsClient.publish(spsPacket);
 	}
 
 
