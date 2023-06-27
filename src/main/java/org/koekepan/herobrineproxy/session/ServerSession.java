@@ -29,6 +29,7 @@ import com.google.common.base.Charsets;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public class ServerSession implements IServerSession {
 
@@ -206,6 +207,13 @@ public class ServerSession implements IServerSession {
 	public void sendPacket(Packet packet) {
 		ConsoleIO.println("Send packet as Server Session: " + packet.getClass().getSimpleName());
 		packetHandler.sendPacket(packet);
+	}
+
+
+	@Override
+	public void sendSPSPacket(SPSPacket spsPacket) {
+		ConsoleIO.println("Can't send packet as serversession");
+//		packetHandler.sendPacket(packet);
 	}
 	
 	

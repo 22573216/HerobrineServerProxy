@@ -3,6 +3,7 @@ package org.koekepan.herobrineproxy.session;
 import org.koekepan.herobrineproxy.behaviour.BehaviourHandler;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public interface ISession {
 	public void setUsername(String username);
@@ -16,4 +17,6 @@ public interface ISession {
 	public void sendPacket(Packet packet);
 	public void packetReceived(Packet packet);
 	public void setPacketBehaviours(BehaviourHandler<Packet> behaviours);
+
+	public void sendSPSPacket(SPSPacket spsPacket);
 }

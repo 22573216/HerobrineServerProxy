@@ -5,6 +5,7 @@ import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.packet.behaviours.ClientSessionPacketBehaviours;
 import org.koekepan.herobrineproxy.packet.behaviours.ServerSessionPacketBehaviours;
 import org.koekepan.herobrineproxy.sps.ISPSConnection;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 import org.koekepan.herobrineproxy.sps.SPSPartition;
 
 import com.github.steveice10.packetlib.packet.Packet;
@@ -50,11 +51,11 @@ public class SPSToServerProxy implements IProxySessionNew {
 	
 
 	@Override
-	public void sendPacketToVASTnet_Client(Packet packet) {
+	public void sendPacketToVASTnet_Client(SPSPacket spsPacket) {
 		
 		//ConsoleIO.println("SPSToServerProxy::sendPacketToClient => Sending packet <"+packet.getClass().getSimpleName()+"> to client <"+clientSession.getHost()+":"+clientSession.getPort()+">");
 //		ConsoleIO.println("SPSToServerProxy::sendPacketToClient=> Sending packet <"+packet.getClass().getSimpleName());
-		client_sps_Session.sendPacket(packet);
+		client_sps_Session.sendSPSPacket(spsPacket);
 	}
 
 	

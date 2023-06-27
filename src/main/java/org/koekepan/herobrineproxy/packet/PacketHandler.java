@@ -8,13 +8,14 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.koekepan.herobrineproxy.ConsoleIO;
 //import org.apache.logging.log4j.LogManager;
 import org.koekepan.herobrineproxy.behaviour.BehaviourHandler;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public class PacketHandler implements Runnable, PacketListener {
 	
 	private IPacketSession packetSession;
 
 	private Queue<Packet> incomingPackets = new ConcurrentLinkedQueue<Packet>();
-	private Queue<Packet> outgoingPackets = new ConcurrentLinkedQueue<Packet>();
+	private Queue<PacketWrapper> outgoingPackets = new ConcurrentLinkedQueue<>();
 	
 	private BehaviourHandler<Packet> behaviours;
 
@@ -34,11 +35,9 @@ public class PacketHandler implements Runnable, PacketListener {
 	}
 	
 	
-	public Queue<Packet> getPackets() {
-		return outgoingPackets;
-	}
-
-
+//	public Queue<SPSPacket> getPackets() {
+//		return outgoingPackets;
+//	}
 	
 	public BehaviourHandler<Packet> getBehaviours() {
 		return behaviours;
@@ -73,18 +72,20 @@ public class PacketHandler implements Runnable, PacketListener {
 	}
 	
 	
-	private void addPacketToOutgoingQueue(Packet packet) {
+	private void addPacketToOutgoingQueue(SPSPacket spsPacket) {
 		try {
 		 	//ConsoleIO.println("PacketHandler::addPacketToOutgoingQueue => Adding packet <"+packet.getClass().getSimpleName()+"> to queue");
 			//if (behaviours.hasBehaviour(packet.getClass())) {
 			//ConsoleIO.println("PacketHandler::addPacketToQueue => Has registered behaviour for packet <"+packet.getClass().getSimpleName()+">");
-			outgoingPackets.add(packet);
+//			outgoingPackets.add(spsPacket);
+			outgoingPackets.add(new PacketWrapper(spsPacket));
 			//}
+
 		} catch (IllegalStateException e) {
 			ConsoleIO.println("PacketHandler::addPacketToOutgoingQueue => IllegalStateException!");
 			//log.error("PacketHandler::addPacketToQueue => IllegalStateException!", e);
 			e.printStackTrace();
-			ConsoleIO.println(packet.toString());
+			ConsoleIO.println(spsPacket.packet.toString());
 		}
 		//outgoingPackets.add(packet);
 	}
@@ -98,29 +99,42 @@ public class PacketHandler implements Runnable, PacketListener {
 	
 	@Override
 	public void sendPacket(Packet packet) {
-		this.addPacketToOutgoingQueue(packet);
+//		this.addPacketToOutgoingQueue(packet);
+		outgoingPackets.add(new PacketWrapper(packet));
 	}
-	
+
+	public void sendSPSPacket(SPSPacket spsPacket) {
+		this.addPacketToOutgoingQueue(spsPacket);
+	}
 	
 	
 	@Override
 	public void run() {
 		Packet packet = null;
+		SPSPacket spsPacket = null;
 		try {
 			packet = incomingPackets.poll();
-			if (packet != null) { // NOT OUTGOING PACKETS! TODO: Should add behaviours to outgoing packets as well.
-				//ConsoleIO.println("PacketHandler::run => Processing packet <"+packet.getClass().getSimpleName()+">. Packets remaining in queue: "+incomingPackets.size());
+			if (packet != null) { // NOT OUTGOING PACKETS!
+				ConsoleIO.println("PacketHandler::run => Processing packet <"+packet.getClass().getSimpleName()+">. Packets remaining in queue: "+incomingPackets.size());
 				behaviours.process(packet);
 			}
 			
 			
-			packet = outgoingPackets.peek();
+//			spsPacket = outgoingPackets.peek();
+			PacketWrapper wrapper = outgoingPackets.peek();
 			//ConsoleIO.println("PacketHandler::run => <"+outgoingPackets.size()+"> packets in outgoing queue");
-			if (packet != null && packetSession != null) {
+			if (wrapper != null && packetSession != null) {
 			//	ConsoleIO.println("PacketHandler::run => Sending outgoing packet  <"+packet.getClass().getSimpleName()+">");
-				
-				packet = outgoingPackets.poll();
-				packetSession.send(packet);
+				wrapper = outgoingPackets.poll();
+				if (wrapper.getSPSPacket() != null) {
+					// It's an SPSPacket
+					spsPacket = wrapper.getSPSPacket();
+					packetSession.sendSPS(spsPacket);
+				} else if (wrapper.getPacket() != null) {
+					// It's a normal Packet
+					packet = wrapper.getPacket();
+					packetSession.send(packet);
+				}
 			}			
 		} catch (Exception e) {
 			ConsoleIO.println("PacketHandler::run => Exception occurred while processing packet <"+packet.getClass().getSimpleName()+">");
@@ -130,4 +144,25 @@ public class PacketHandler implements Runnable, PacketListener {
 		}
 	}
 
+}
+
+class PacketWrapper {
+	private SPSPacket spsPacket;
+	private Packet packet;
+
+	public PacketWrapper(SPSPacket spsPacket) {
+		this.spsPacket = spsPacket;
+	}
+
+	public PacketWrapper(Packet packet) {
+		this.packet = packet;
+	}
+
+	public SPSPacket getSPSPacket() {
+		return spsPacket;
+	}
+
+	public Packet getPacket() {
+		return packet;
+	}
 }

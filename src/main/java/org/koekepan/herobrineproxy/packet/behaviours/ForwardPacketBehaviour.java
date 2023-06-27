@@ -5,6 +5,7 @@ import org.koekepan.herobrineproxy.behaviour.Behaviour;
 import org.koekepan.herobrineproxy.session.IProxySessionNew;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public class ForwardPacketBehaviour implements Behaviour<Packet>{
 
@@ -26,7 +27,9 @@ public class ForwardPacketBehaviour implements Behaviour<Packet>{
 		if (toServer) {
 			proxySession.sendPacketToServer(packet);
 		} else {
-			proxySession.sendPacketToVASTnet_Client(packet);
+//			spsPacket = new SPSPacket(packet, )
+			SPSPacket spsPacket = new SPSPacket(packet, this.proxySession.getUsername(), 500, 500, 2000, "clientBound");
+			proxySession.sendPacketToVASTnet_Client(spsPacket);
 		}
 	}
 }

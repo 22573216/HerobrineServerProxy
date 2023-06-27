@@ -7,6 +7,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.behaviour.Behaviour;
 import org.koekepan.herobrineproxy.session.IProxySessionNew;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public class ServerLoginSuccessPacketBehaviour implements Behaviour<Packet> {
 		
@@ -24,7 +25,8 @@ public class ServerLoginSuccessPacketBehaviour implements Behaviour<Packet> {
 	@Override
 	public void process(Packet packet) {
 		LoginSuccessPacket loginSuccessPacket = (LoginSuccessPacket)packet;	
-		ConsoleIO.println("ServerLoginSuccessPacketBehaviour::process => Player \""+loginSuccessPacket.getProfile().getName()+"\" has successfully logged into the server");		
-		proxySession.sendPacketToVASTnet_Client(packet);
+		ConsoleIO.println("ServerLoginSuccessPacketBehaviour::process => Player \""+loginSuccessPacket.getProfile().getName()+"\" has successfully logged into the server");
+		SPSPacket spsPacket = new SPSPacket(packet, loginSuccessPacket.getProfile().getName(), 500, 500, 2000, "clientBound");
+		proxySession.sendPacketToVASTnet_Client(spsPacket);
 	}
 }

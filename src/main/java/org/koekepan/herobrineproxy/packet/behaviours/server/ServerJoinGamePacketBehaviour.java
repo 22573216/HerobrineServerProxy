@@ -7,6 +7,7 @@ import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.behaviour.Behaviour;
 import org.koekepan.herobrineproxy.session.IProxySessionNew;
 import org.koekepan.herobrineproxy.session.IServerSession;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public class ServerJoinGamePacketBehaviour implements Behaviour<Packet> {
 		
@@ -29,7 +30,9 @@ public class ServerJoinGamePacketBehaviour implements Behaviour<Packet> {
 		serverJoinPacket.getEntityId();
 		//proxySession.setJoined(true);
 		ConsoleIO.println("player \""+proxySession.getUsername()+"\" with entityID <"+serverJoinPacket.getEntityId()+"> has successfully joined world");
-		proxySession.sendPacketToVASTnet_Client(packet);
+
+		SPSPacket spsPacket = new SPSPacket(packet, proxySession.getUsername(), 500, 500, 2000, "clientBound");
+		proxySession.sendPacketToVASTnet_Client(spsPacket);
 		serverSession.setJoined(true);
 		//proxySession.registerForPluginChannels();
 		//proxySession.getJoinedCountDownLatch().countDown();

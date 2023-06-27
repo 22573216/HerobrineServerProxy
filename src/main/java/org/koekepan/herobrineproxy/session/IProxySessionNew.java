@@ -3,6 +3,7 @@ package org.koekepan.herobrineproxy.session;
 import org.koekepan.herobrineproxy.sps.SPSPartition;
 
 import com.github.steveice10.packetlib.packet.Packet;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public interface IProxySessionNew {
 	
@@ -20,7 +21,7 @@ public interface IProxySessionNew {
 	public void disconnect();
 	public void disconnectFromServer();
 	
-	public void sendPacketToVASTnet_Client(Packet packet);
+	public void sendPacketToVASTnet_Client(SPSPacket spsPacket);
 	public void sendPacketToServer(Packet packet);
 	
 	public void migrate(String host, int port);

@@ -32,6 +32,14 @@ public class SPSPacketSession implements IPacketSession {
 		SPSPacket spsPacket = new SPSPacket(packet, username, "clientBound"); // TODO: Dynamic Channel
 		session.publish(spsPacket);
 	}
+	@Override
+	public void sendSPS(SPSPacket spsPacket) {
+		ConsoleIO.println("Sending packet via SPSPacketSession sendsps: " + spsPacket.packet.getClass());
+
+//		SPSPacket spsPacket = new SPSPacket(packet, username, channel);
+//		SPSPacket spsPacket = new SPSPacket(packet, username, "clientBound");
+		session.publish(spsPacket);
+	}
 	
 	
 	public void setUsername(String username) {

@@ -8,6 +8,7 @@ import com.github.steveice10.packetlib.packet.Packet;
 import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.behaviour.Behaviour;
 import org.koekepan.herobrineproxy.session.IProxySessionNew;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public class ServerPlayerPositionPacketBehaviour implements Behaviour<Packet> {
 		
@@ -28,7 +29,9 @@ public class ServerPlayerPositionPacketBehaviour implements Behaviour<Packet> {
 		ConsoleIO.println("ServerPlayerPositionRotationPacket::process => Player \""+proxySession.getUsername()+"\" received location: "+p.toString());		
 		ClientPlayerPositionRotationPacket responsePacket = new ClientPlayerPositionRotationPacket(true, p.getX(), p.getY(), p.getZ(), p.getYaw(), p.getPitch());
 		proxySession.sendPacketToServer(responsePacket);
-		proxySession.sendPacketToVASTnet_Client(packet);
+
+		SPSPacket spsPacket = new SPSPacket(packet, proxySession.getUsername(), 500, 500, 2000, "clientBound");
+		proxySession.sendPacketToVASTnet_Client(spsPacket);
 		proxySession.setPacketForwardingBehaviour();
 	}
 }

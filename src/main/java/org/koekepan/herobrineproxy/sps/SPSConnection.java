@@ -217,7 +217,7 @@ public class SPSConnection implements ISPSConnection {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
-		socket.emit("subscribe", 250,250,300,"serverBound");
+		socket.emit("subscribe", 250,250,350,"serverBound");
 //		socket.emit("subscribe", 750,750,300,"serverBound");
 	}
 
@@ -282,7 +282,7 @@ public class SPSConnection implements ISPSConnection {
 	@Override
 	public void publish(SPSPacket packet) { // Send to Vast matcher via a client
 		tempcounter_deleteme += 1;
-		ConsoleIO.println("Amount of publications sent: "+ tempcounter_deleteme +": " + packet.packet.getClass().getSimpleName() + " to channel: " + packet.channel);
+		ConsoleIO.println("Amount of publications sent: "+ tempcounter_deleteme +": " + packet.packet.getClass().getSimpleName() + " to channel: " + packet.channel + ": " + packet.username );
 //		ConsoleIO.println("Publishing a packet:" + packet.packet.getClass().getSimpleName());
 		
 		if (packet.packet instanceof ServerSpawnMobPacket) {
@@ -358,7 +358,8 @@ public class SPSConnection implements ISPSConnection {
 //			socket.emit("publish", connectionID, packet.username, (int) 500, (int) 500, 100, json, packet.channel);
 			socket.emit("publish", connectionID, packet.username, (int) 500, (int) 500, 2000, json, packet.channel);
 		} else {
-			socket.emit("publish", connectionID, packet.username, 500, 500, 2000, json, packet.channel);
+			ConsoleIO.println("Trying to publish to: " + packet.x + ", " + packet.y + " and radius: " + packet.radius);
+			socket.emit("publish", connectionID, packet.username, packet.x, packet.y, packet.radius, json, packet.channel);
 		}
 		
 	}

@@ -16,6 +16,7 @@ import org.koekepan.herobrineproxy.packet.behaviours.DefaultPacketBehaviours;
 
 import com.github.steveice10.packetlib.Session;
 import com.github.steveice10.packetlib.packet.Packet;
+import org.koekepan.herobrineproxy.sps.SPSPacket;
 
 public class ClientSession implements ISession {
 
@@ -96,13 +97,19 @@ public class ClientSession implements ISession {
 	@Override
 	public void sendPacket(Packet packet) {
 		ConsoleIO.println("Sent packet as Client Session");
-		packetHandler.sendPacket(packet);		
+		packetHandler.sendPacket(packet);
+	}
+
+	@Override
+	public void sendSPSPacket(SPSPacket spsPacket) {
+		ConsoleIO.println("Can't send sps packet as client session");
+//		packetHandler.sendPacket(packet);
 	}
 
 
 	@Override
 	public void packetReceived(Packet packet) {
-		//ConsoleIO.println("ClientSession::packet received <"+packet.getClass().getSimpleName()+">");
+		ConsoleIO.println("ClientSession::packet received <"+packet.getClass().getSimpleName()+">");
 		packetHandler.packetReceived(packet);		
 	}
 }
