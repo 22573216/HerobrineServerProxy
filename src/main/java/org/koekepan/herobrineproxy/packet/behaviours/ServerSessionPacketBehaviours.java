@@ -6,6 +6,7 @@ import org.koekepan.herobrineproxy.packet.behaviours.login.MigrateLoginSuccessPa
 import org.koekepan.herobrineproxy.packet.behaviours.login.ServerLoginSuccessPacketBehaviour;
 import org.koekepan.herobrineproxy.packet.behaviours.login.ServerPlayerPositionPacketBehaviour;
 import org.koekepan.herobrineproxy.packet.behaviours.server.MigrateJoinGamePacketBehaviour;
+import org.koekepan.herobrineproxy.packet.behaviours.server.ServerBlockChangePacketBehaviour;
 import org.koekepan.herobrineproxy.packet.behaviours.server.ServerJoinGamePacketBehaviour;
 //import org.koekepan.herobrineproxy.packet.behaviours.server.ServerJoinGamePacketBehaviour;
 import org.koekepan.herobrineproxy.packet.behaviours.server.ServerPluginMessagePacketBehaviour;
@@ -61,7 +62,9 @@ public class ServerSessionPacketBehaviours extends BehaviourHandler<Packet> {
 		registerBehaviour(ServerBlockBreakAnimPacket.class, clientForwarder);
 		registerBehaviour(ServerUpdateTileEntityPacket.class, clientForwarder);
 		registerBehaviour(ServerBlockValuePacket.class, clientForwarder);
-		registerBehaviour(ServerBlockChangePacket.class, clientForwarder);
+
+		registerBehaviour(ServerBlockChangePacket.class, new ServerBlockChangePacketBehaviour(proxySession));
+
 		registerBehaviour(ServerBossBarPacket.class, clientForwarder);
 		registerBehaviour(ServerDifficultyPacket.class, clientForwarder);
 		registerBehaviour(ServerTabCompletePacket.class, clientForwarder);
