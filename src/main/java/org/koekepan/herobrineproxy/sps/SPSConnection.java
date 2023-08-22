@@ -217,7 +217,7 @@ public class SPSConnection implements ISPSConnection {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
-		socket.emit("subscribe", 250,250,350,"serverBound");
+		socket.emit("subscribe", 250,250,1000,"serverBound");
 //		socket.emit("subscribe", 750,750,300,"serverBound");
 	}
 
@@ -364,10 +364,10 @@ public class SPSConnection implements ISPSConnection {
 		
 	}
 
-	
-	public void changeListener(String username, ISession session) {
-		listeners.replace(username, session);
-	}
+
+//	public void changeListener(String username, ISession session) {
+//		listeners.replace(username, session);
+//	}
 
 	@Override
 	public void subscribe(String channel) {
