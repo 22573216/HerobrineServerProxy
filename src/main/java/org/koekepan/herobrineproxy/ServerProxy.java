@@ -44,7 +44,12 @@ public class ServerProxy implements IProxySessionConstructor{
 
 		// setup proxy server and add listener to create and store/discard proxy sessions as clients connect/disconnect
 		server = new Server(ThisProxyHost, ThisProxyPort, HerobrineProxyProtocol.class, new TcpSessionFactory());
-		
+
+	}
+
+
+	public ISPSConnection getSpsConnection() {
+		return spsConnection;
 	}
 	
 	

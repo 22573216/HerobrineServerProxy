@@ -5,9 +5,12 @@ import java.io.IOException;
 import org.koekepan.herobrineproxy.ConsoleIO;
 import org.koekepan.herobrineproxy.ServerProxy;
 import org.koekepan.herobrineproxy.session.IProxySessionNew;
+import org.koekepan.herobrineproxy.singularpackets.PacketServerProxy;
+import org.koekepan.herobrineproxy.sps.SPSConnection;
 
 public class HerobrineServerVastProxy {
 	private static ServerProxy proxy = null;
+	private static PacketServerProxy proxy_for_singular_packets = null;
 
 	public static void main(String[] args) {
 		String VastHost = "127.0.0.1";
@@ -32,6 +35,8 @@ public class HerobrineServerVastProxy {
 				ThisProxyHost = args[4];
 				ThisProxyPort = Integer.parseInt(args[5]);
 				proxy = new ServerProxy(VastHost, VastPort, MinecraftServerHost, MinecraftServerPort, ThisProxyHost, ThisProxyPort);
+				proxy_for_singular_packets = new PacketServerProxy(MinecraftServerHost, MinecraftServerPort, (SPSConnection) proxy.getSpsConnection());
+
 			} else {
 				printUsageMessage();
 			}
