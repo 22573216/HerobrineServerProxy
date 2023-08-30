@@ -5,12 +5,14 @@ import org.koekepan.herobrineproxy.packet.behaviours.login.LoginSetCompressionPa
 import org.koekepan.herobrineproxy.packet.behaviours.login.MigrateLoginSuccessPacketBehaviour;
 import org.koekepan.herobrineproxy.packet.behaviours.login.ServerLoginSuccessPacketBehaviour;
 import org.koekepan.herobrineproxy.packet.behaviours.login.ServerPlayerPositionPacketBehaviour;
-import org.koekepan.herobrineproxy.packet.behaviours.server.MigrateJoinGamePacketBehaviour;
-import org.koekepan.herobrineproxy.packet.behaviours.server.ServerBlockChangePacketBehaviour;
-import org.koekepan.herobrineproxy.packet.behaviours.server.ServerJoinGamePacketBehaviour;
+import org.koekepan.herobrineproxy.packet.behaviours.server.*;
 //import org.koekepan.herobrineproxy.packet.behaviours.server.ServerJoinGamePacketBehaviour;
-import org.koekepan.herobrineproxy.packet.behaviours.server.ServerPluginMessagePacketBehaviour;
 //import org.koekepan.herobrineproxy.packet.behaviours.login.ServerLoginSuccessPacketBehaviour;
+import org.koekepan.herobrineproxy.packet.behaviours.server.entity.*;
+import org.koekepan.herobrineproxy.packet.behaviours.server.world.ServerBlockChangePacketBehaviour;
+import org.koekepan.herobrineproxy.packet.behaviours.server.world.ServerChunkDataPacketBehaviour;
+import org.koekepan.herobrineproxy.packet.behaviours.server.world.ServerMultiBlockChangePacketBehaviour;
+import org.koekepan.herobrineproxy.packet.behaviours.server.world.ServerUpdateTileEntityPacketBehaviour;
 import org.koekepan.herobrineproxy.session.IProxySessionNew;
 import org.koekepan.herobrineproxy.session.IServerSession;
 
@@ -54,13 +56,15 @@ public class ServerSessionPacketBehaviours extends BehaviourHandler<Packet> {
 		registerBehaviour(ServerSpawnObjectPacket.class, clientForwarder);
 		registerBehaviour(ServerSpawnExpOrbPacket.class, clientForwarder);
 		registerBehaviour(ServerSpawnGlobalEntityPacket.class, clientForwarder);
-		registerBehaviour(ServerSpawnMobPacket.class, clientForwarder);
+		registerBehaviour(ServerSpawnMobPacket.class, new ServerSpawnMobPacketBehaviour(proxySession));
 		registerBehaviour(ServerSpawnPaintingPacket.class, clientForwarder);
-		registerBehaviour(ServerSpawnPlayerPacket.class, clientForwarder);
+
+		registerBehaviour(ServerSpawnPlayerPacket.class, new ServerSpawnPlayerPacketBehaviour(proxySession));
+
 		registerBehaviour(ServerEntityAnimationPacket.class, clientForwarder);
 		registerBehaviour(ServerStatisticsPacket.class, clientForwarder);
 		registerBehaviour(ServerBlockBreakAnimPacket.class, clientForwarder);
-		registerBehaviour(ServerUpdateTileEntityPacket.class, clientForwarder);
+		registerBehaviour(ServerUpdateTileEntityPacket.class, new ServerUpdateTileEntityPacketBehaviour(proxySession));
 		registerBehaviour(ServerBlockValuePacket.class, clientForwarder);
 
 		registerBehaviour(ServerBlockChangePacket.class, new ServerBlockChangePacketBehaviour(proxySession));
@@ -69,7 +73,9 @@ public class ServerSessionPacketBehaviours extends BehaviourHandler<Packet> {
 		registerBehaviour(ServerDifficultyPacket.class, clientForwarder);
 		registerBehaviour(ServerTabCompletePacket.class, clientForwarder);
 		registerBehaviour(ServerChatPacket.class, clientForwarder);
-		registerBehaviour(ServerMultiBlockChangePacket.class, clientForwarder);
+
+		registerBehaviour(ServerMultiBlockChangePacket.class, new ServerMultiBlockChangePacketBehaviour(proxySession));
+
 		registerBehaviour(ServerConfirmTransactionPacket.class, clientForwarder);
 		registerBehaviour(ServerCloseWindowPacket.class, clientForwarder);
 		registerBehaviour(ServerOpenWindowPacket.class, clientForwarder);
@@ -79,20 +85,31 @@ public class ServerSessionPacketBehaviours extends BehaviourHandler<Packet> {
 		registerBehaviour(ServerSetCooldownPacket.class, clientForwarder);
 		registerBehaviour(ServerPlaySoundPacket.class, clientForwarder);
 		registerBehaviour(ServerDisconnectPacket.class, clientForwarder);
-		registerBehaviour(ServerEntityStatusPacket.class, clientForwarder);
+
+		registerBehaviour(ServerEntityStatusPacket.class, new ServerEntityStatusPacketBehaviour(proxySession));
+
 		registerBehaviour(ServerExplosionPacket.class, clientForwarder);
 		registerBehaviour(ServerUnloadChunkPacket.class, clientForwarder);
 		registerBehaviour(ServerNotifyClientPacket.class, clientForwarder);
 		registerBehaviour(ServerKeepAlivePacket.class, clientForwarder);
-		registerBehaviour(ServerChunkDataPacket.class, clientForwarder);
+
+		registerBehaviour(ServerChunkDataPacket.class, new ServerChunkDataPacketBehaviour(proxySession));
+		
 		registerBehaviour(ServerPlayEffectPacket.class, clientForwarder);
 		registerBehaviour(ServerSpawnParticlePacket.class, clientForwarder);
+
 		registerBehaviour(ServerJoinGamePacket.class, new ServerJoinGamePacketBehaviour(proxySession, serverSession));
+
 		registerBehaviour(ServerMapDataPacket.class, clientForwarder);
-		registerBehaviour(ServerEntityPositionPacket.class, clientForwarder);
-		registerBehaviour(ServerEntityPositionRotationPacket.class, clientForwarder);
-		registerBehaviour(ServerEntityRotationPacket.class, clientForwarder);
-		registerBehaviour(ServerEntityMovementPacket.class, clientForwarder);
+
+		registerBehaviour(ServerEntityPositionPacket.class, 		new ServerEntityMovementPacketBehaviour(proxySession));
+		registerBehaviour(ServerEntityPositionRotationPacket.class, new ServerEntityMovementPacketBehaviour(proxySession));
+		registerBehaviour(ServerEntityRotationPacket.class, 		new ServerEntityMovementPacketBehaviour(proxySession));
+		registerBehaviour(ServerEntityMovementPacket.class, 		new ServerEntityMovementPacketBehaviour(proxySession));
+//		registerBehaviour(ServerEntityPositionRotationPacket.class, clientForwarder);
+//		registerBehaviour(ServerEntityRotationPacket.class, 		clientForwarder);
+//		registerBehaviour(ServerEntityMovementPacket.class, 		clientForwarder);
+
 		registerBehaviour(ServerVehicleMovePacket.class, clientForwarder);
 		registerBehaviour(ServerOpenTileEntityEditorPacket.class, clientForwarder);
 		registerBehaviour(ServerPlayerAbilitiesPacket.class, clientForwarder);
@@ -103,16 +120,24 @@ public class ServerSessionPacketBehaviours extends BehaviourHandler<Packet> {
 		registerBehaviour(ServerEntityRemoveEffectPacket.class, clientForwarder);
 		registerBehaviour(ServerResourcePackSendPacket.class, clientForwarder);
 		registerBehaviour(ServerRespawnPacket.class, clientForwarder);
-		registerBehaviour(ServerEntityHeadLookPacket.class, clientForwarder);
+
+		registerBehaviour(ServerEntityHeadLookPacket.class, new ServerEntityHeadLookPacketBehaviour(proxySession));
+
 		registerBehaviour(ServerWorldBorderPacket.class, clientForwarder);
 		registerBehaviour(ServerSwitchCameraPacket.class, clientForwarder);
 		registerBehaviour(ServerPlayerChangeHeldItemPacket.class, clientForwarder);
 		registerBehaviour(ServerDisplayScoreboardPacket.class, clientForwarder);
-		registerBehaviour(ServerEntityMetadataPacket.class, clientForwarder);
+
+		registerBehaviour(ServerEntityMetadataPacket.class, new ServerEntityMetadataPacketBehaviour(proxySession));
+
 		registerBehaviour(ServerEntityAttachPacket.class, clientForwarder);
-		registerBehaviour(ServerEntityVelocityPacket.class, clientForwarder);
+
+		registerBehaviour(ServerEntityVelocityPacket.class, new ServerEntityVelocityPacketBehaviour(proxySession));
+
 		registerBehaviour(ServerEntityEquipmentPacket.class, clientForwarder);
-		registerBehaviour(ServerPlayerPositionRotationPacket.class, clientForwarder);
+
+		registerBehaviour(ServerPlayerPositionRotationPacket.class, new ServerPlayerPositionRotationPacketBehaviour(proxySession));
+
 		registerBehaviour(ServerPlayerSetExperiencePacket.class, clientForwarder);
 		registerBehaviour(ServerPlayerHealthPacket.class, clientForwarder);
 		registerBehaviour(ServerScoreboardObjectivePacket.class, clientForwarder);
