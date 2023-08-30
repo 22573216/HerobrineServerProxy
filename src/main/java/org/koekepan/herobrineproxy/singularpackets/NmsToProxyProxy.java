@@ -46,8 +46,8 @@ public class NmsToProxyProxy implements IProxySessionNew {
 
     @Override
     public String getUsername() {
-        return client_sps_Session.getUsername();
-    } // Should not be needed
+        return serverSession.getUsername();
+    } // Used in behaviours
 
 
     @Override
