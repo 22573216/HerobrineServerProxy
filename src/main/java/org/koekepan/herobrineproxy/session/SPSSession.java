@@ -147,7 +147,7 @@ public class SPSSession implements IServerSession {
 	}
 	@Override
 	public void sendSPSPacket(SPSPacket spsPacket) {
-		ConsoleIO.println("Sending packet via SPSSession to VAST: " + spsPacket.packet.getClass().getSimpleName());
+		ConsoleIO.println("Sending packet via SPSSession to VAST: " + spsPacket.packet.getClass().getSimpleName() + " with channel: " + spsPacket.channel);
 //		ConsoleIO.println("SPSSession::sendPacket => sending packet " + packet.getClass().getSimpleName());
 //		SPSPacket spsPacket = new SPSPacket(packet, this.username, 500, 500, 2000, "clientBound");
 		packetHandler.sendSPSPacket(spsPacket);

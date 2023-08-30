@@ -28,6 +28,15 @@ public class SPSPacket {
 		this.y = y;
 		this.radius = radius;
 	}
+
+	public SPSPacket(Packet packet, String channel, int x, int y, int radius) {
+		this.packet = packet;
+		this.channel = channel;
+		this.username = "Herobrine";
+		this.x = x;
+		this.y = y;
+		this.radius = radius;
+	}
 	
 	
 }
