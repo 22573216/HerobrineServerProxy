@@ -1,4 +1,4 @@
-package org.koekepan.herobrineproxy.packet.behaviours.server;
+package org.koekepan.herobrineproxy.packet.behaviours.server.world;
 
 import com.github.steveice10.mc.protocol.data.game.world.block.BlockChangeRecord;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerJoinGamePacket;
@@ -27,7 +27,7 @@ public class ServerBlockChangePacketBehaviour implements Behaviour<Packet> {
         BlockChangeRecord blockRecord = serverBlockChangePacket.getRecord();
         ConsoleIO.println("Block changed at position: " + blockRecord.getPosition().getX() + ", " + blockRecord.getPosition().getY() + ", " + blockRecord.getPosition().getZ());
 
-        SPSPacket spsPacket = new SPSPacket(packet, proxySession.getUsername(), blockRecord.getPosition().getX(), blockRecord.getPosition().getZ(), 0, "clientBound");
+        SPSPacket spsPacket = new SPSPacket(packet, "clientBound", blockRecord.getPosition().getX(), blockRecord.getPosition().getZ(), 0);
         proxySession.sendPacketToVASTnet_Client(spsPacket);
     }
 }
