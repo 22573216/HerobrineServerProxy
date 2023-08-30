@@ -28,8 +28,10 @@ public class ForwardPacketBehaviour implements Behaviour<Packet>{
 			proxySession.sendPacketToServer(packet);
 		} else {
 //			spsPacket = new SPSPacket(packet, )
-			SPSPacket spsPacket = new SPSPacket(packet, this.proxySession.getUsername(), 500, 500, 2000, "clientBound");
-			proxySession.sendPacketToVASTnet_Client(spsPacket);
+			if (!(this.proxySession.getUsername().equals("ProxyListener2"))) {
+				SPSPacket spsPacket = new SPSPacket(packet, this.proxySession.getUsername(), 500, 500, 2000, "clientBound");
+				proxySession.sendPacketToVASTnet_Client(spsPacket);
+			}
 		}
 	}
 }
